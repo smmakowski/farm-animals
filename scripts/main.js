@@ -4,6 +4,11 @@ var GameState = {
     this.load.image('background', 'assets/images/sample-background.png');
   },
   create: function() { // create scene here
+    //set resizing and scale properties for device universiality
+    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL; // auto scale while maintaining aspect ratio
+    this.scale.pageAlignHorizontally = true; // cetner horizontally
+    this.scale.pageAlignVertivally = true; // center vertically
+
     this.background = this.game.add.sprite(0, 0,'background');
   },
   update: function() { // update function
