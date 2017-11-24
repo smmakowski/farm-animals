@@ -6,11 +6,11 @@ let GameState = {
   preload: function() { // preload assets here
     // load images
     this.load.image('background', 'assets/images/background.png');
-    this.load.image('arrow', 'assets/images/arrow.png');
-    this.load.image('chicken', 'assets/images/chicken.png');
-    this.load.image('pig', 'assets/images/pig.png');
-    this.load.image('horse', 'assets/images/horse.png');
-    this.load.image('sheep', 'assets/images/sheep.png');
+    this.load.image('arrow', 'assets/images/arrow.png'); // params = (key, file sour)
+    this.load.spritesheet('chicken', 'assets/images/chicken_spritesheet.png', 131, 200, 3);
+    this.load.spritesheet('pig', 'assets/images/pig_spritesheet.png', 297, 200, 3); //params = (key, path, height, width, frames);
+    this.load.spritesheet('horse', 'assets/images/horse_spritesheet.png', 212, 200, 3);
+    this.load.spritesheet('sheep', 'assets/images/sheep_spritesheet.png', 244, 200, 3);
 
     //load sounds
     this.load.audio('chickenSound', ['assets/audio/chicken.mp3', 'assets/audio/chicken.ogg']);
@@ -57,9 +57,11 @@ let GameState = {
 
     animalData.forEach(function(animal, idx) {
 
-      animal = self.animals.create(-1000, self.game.world.centerY, animal.key);
+      animal = self.animals.create(-1000, self.game.world.centerY, animal.key, 0); // creates an isprtie in the group (x, 4, imagekey, frame (if sprtiesheet))
      // high negative keeps it off screen
       animal.anchor.setTo(.5);
+
+      animal.animations.add('animate', [0, 1, 2, 1, 0,], 3, false); // params = (name, [sequence of frames), frames in sheet, replay)
       animal.customParams = {text: animal.text, sound: self.game.add.audio(animal.audio)}; // set custom paramater
       animal.inputEnabled = true;
       animal.input.pixelPerfectClick = true; //restricts clickable area to hug item
@@ -126,6 +128,7 @@ let GameState = {
   },
 
   animateAnimal: function(sprite, event) {
+    sprite.animations.play('animate');
     sprite.customParams.sound.play(); // debug me later
   }
 };
