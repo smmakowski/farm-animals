@@ -2,6 +2,7 @@
 let GameState = {
   // game state to control moving
   isMoving: false,
+  isPlayingSound: false,
   // game state methods
   preload: function() { // preload assets here
     // load images
@@ -20,7 +21,7 @@ let GameState = {
   },
   create: function() { // create scene here
     const animalData = [
-      {key: 'chicken', text: 'CHICKEN', audio: 'chickenSound'},
+      {key: 'chicken', text: 'CHICKEN', audio: 'chickenSound', wut: 'asdf'},
       {key: 'horse', text: 'HORSE', audio: 'horseSound'},
       {key: 'pig', text: 'PIG', audio: 'pigSound'},
       {key: 'sheep', text: 'SHEEP', audio: 'sheepSound'},
@@ -55,14 +56,13 @@ let GameState = {
     this.animals = this.game.add.group();
 
 
-    animalData.forEach(function(animal, idx) {
+    animalData.forEach(function(a) {
 
-      animal = self.animals.create(-1000, self.game.world.centerY, animal.key, 0); // creates an isprtie in the group (x, 4, imagekey, frame (if sprtiesheet))
+      let animal = self.animals.create(-1000, self.game.world.centerY, a.key, 0); // creates an isprtie in the group (x, 4, imagekey, frame (if sprtiesheet))
      // high negative keeps it off screen
       animal.anchor.setTo(.5);
-
       animal.animations.add('animate', [0, 1, 2, 1, 0,], 3, false); // params = (name, [sequence of frames), frames in sheet, replay)
-      animal.customParams = {text: animal.text, sound: self.game.add.audio(animal.audio)}; // set custom paramater
+      animal.customParams = {text: animal.text, sound: self.game.add.audio(a.audio)}; // set custom paramater
       animal.inputEnabled = true;
       animal.input.pixelPerfectClick = true; //restricts clickable area to hug item
       animal.events.onInputDown.add(self.animateAnimal, self);
@@ -129,7 +129,8 @@ let GameState = {
 
   animateAnimal: function(sprite, event) {
     sprite.animations.play('animate');
-    sprite.customParams.sound.play(); // debug me later
+    sprite.customParams.sound.play();
+
   }
 };
 
