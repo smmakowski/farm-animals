@@ -1,5 +1,8 @@
 // game state object
 let GameState = {
+  // game state to control moving
+  isMoving: false,
+  // game state methods
   preload: function() { // preload assets here
     // load images
     this.load.image('background', 'assets/images/background.png');
@@ -52,8 +55,10 @@ let GameState = {
     this.animals = this.game.add.group();
 
 
-    animalData.forEach(function(animal) {
-      animal = self.animals.create(-1000, self.game.world.centerY, animal.key); // high negative keeps it off screen
+    animalData.forEach(function(animal, idx) {
+
+      animal = self.animals.create(-1000, self.game.world.centerY, animal.key);
+     // high negative keeps it off screen
       animal.anchor.setTo(.5);
       animal.customParams = {text: animal.text, sound: self.game.add.audio(animal.audio)}; // set custom paramater
       animal.inputEnabled = true;
@@ -72,25 +77,48 @@ let GameState = {
     const direction = sprite.customParams.direction;
     const self = this;
     let newAnimal, endX;
+    console.log(self.currentAnimal);
+    // use isMoving state to prvent multi-click when switching
+    if (this.isMoving) {
+      return false;
+    } else {
+      this.isMoving = true;
+    }
+    // check current and next to prevent moving further than  list intends
+    // if (this.currentAnimal.key === 'chicken' && direction === -1) {
+    //   return false;
+    // } else if (this.currentAnimal.key === 'sheep' && direction === 1) {
+    //   return false;
+    // }
+
     // determine new animal based on arrow direction
     if (direction === 1) {
-      newAnimal = this.animals.next();
+      newAnimal = this.animals.next(); // set the new animal to next
+      newAnimal.x = -1000; /// place animal all the way left to prevent cross tweeing
       endX = 1000;
 
     }  else if (direction === -1) {
       newAnimal = this.animals.previous();
+      newAnimal.x = 1000;
       endX = -1000;
     }
+
     //move current
     // move current off screen
     // store twee animation
     const currentAnimalMovement = this.add.tween(self.currentAnimal);
     currentAnimalMovement.to({x: endX}, 1000); // set tween options
+    currentAnimalMovement.onComplete.add(function() {
+      self.isMoving = false;
+    });
     currentAnimalMovement.start(); // begin animation
 
 
     const newAnimalMovement = this.add.tween(newAnimal);
     newAnimalMovement.to({x: self.game.world.centerX}, 1000);
+    newAnimalMovement.onComplete.add(function() {
+      self.isMoving = false;
+    });
     newAnimalMovement.start();
     // this.currentAnimal.position.set(-1000, self.game.world.centerY);
     this.currentAnimal = newAnimal; //reset current and move new curren tot cente
