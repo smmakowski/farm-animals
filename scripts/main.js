@@ -3,6 +3,7 @@ let GameState = {
   // game state to control moving
   isMoving: false,
   isPlayingSound: false,
+  currentAnimal: null,
   // game state methods
   preload: function() { // preload assets here
     // load images
@@ -62,14 +63,18 @@ let GameState = {
      // high negative keeps it off screen
       animal.anchor.setTo(.5);
       animal.animations.add('animate', [0, 1, 2, 1, 0,], 3, false); // params = (name, [sequence of frames), frames in sheet, replay)
-      animal.customParams = {text: animal.text, sound: self.game.add.audio(a.audio)}; // set custom paramater
+      animal.customParams = {text: a.text, sound: self.game.add.audio(a.audio)}; // set custom paramater
       animal.inputEnabled = true;
       animal.input.pixelPerfectClick = true; //restricts clickable area to hug item
       animal.events.onInputDown.add(self.animateAnimal, self);
     });
+    // select a random idex
+    let randomIdx = Math.floor(Math.random() * 4);
 
-    this.currentAnimal = this.animals.next(); // goes to next animal in list
+    // set curernt animal to random index
+    this.currentAnimal = this.animals.children[randomIdx]; // goes to next animal in list
     this.currentAnimal.position.set(this.game.world.centerX, this.game.world.centerY);
+    this.showText();
   },
   update: function() { // update function
 
@@ -86,6 +91,7 @@ let GameState = {
     } else {
       this.isMoving = true;
     }
+    this.animalText.setText('');
     // check current and next to prevent moving further than  list intends
     // if (this.currentAnimal.key === 'chicken' && direction === -1) {
     //   return false;
@@ -111,7 +117,8 @@ let GameState = {
     const currentAnimalMovement = this.add.tween(self.currentAnimal);
     currentAnimalMovement.to({x: endX}, 1000); // set tween options
     currentAnimalMovement.onComplete.add(function() {
-      self.isMoving = false;
+      // self.isMoving = false;
+      self.showText();
     });
     currentAnimalMovement.start(); // begin animation
 
@@ -119,19 +126,46 @@ let GameState = {
     const newAnimalMovement = this.add.tween(newAnimal);
     newAnimalMovement.to({x: self.game.world.centerX}, 1000);
     newAnimalMovement.onComplete.add(function() {
-      self.isMoving = false;
+
+      self.showText();
     });
     newAnimalMovement.start();
     // this.currentAnimal.position.set(-1000, self.game.world.centerY);
     this.currentAnimal = newAnimal; //reset current and move new curren tot cente
     // this.currentAnimal.position.set(self.game.world.centerX, self.game.world.centerY);
+
   },
 
   animateAnimal: function(sprite, event) {
     sprite.animations.play('animate');
     sprite.customParams.sound.play();
+  },
 
-  }
+  showText: function() {
+    const style = {
+      font: 'bold 30pt Arial',
+      fill: '#D0171B',
+      align: 'center',
+    }
+
+    const self = this;
+    if (!(this.animalText)) {
+      this.animalText = this.game.add.text(this.game.width / 2, this.game.height * .85, '', style);
+      this.animalText.anchor.setTo(.5);
+      this.animalText.setText(this.currentAnimal.customParams.text);
+    } else {
+      const animalTextMovement = this.add.tween(self.animalText);
+      this.animalText.y = this.game.height + 100;
+      animalTextMovement.to({y: self.game.height * .85}, 500);
+      animalTextMovement.onComplete.add(function() {
+        // set moving to false after complete of text
+        self.isMoving = false;
+      });
+      // this.animalText.x(this.game.height + 500); // move to under screen
+      this.animalText.setText(this.currentAnimal.customParams.text); // set text
+      animalTextMovement.start();
+    }
+  },
 };
 
 let game = new Phaser.Game(640, 360, Phaser.AUTO); // init new Game; pahser will automatically append a canvas
