@@ -43,7 +43,6 @@ let GameState = {
     this.rightArrow.customParams = {direction: 1}; // sets custom params
     this.rightArrow.inputEnabled = true; // add click handler
     this.rightArrow.events.onInputDown.add(this.switchAnimal, this);
-    // this.rightArrow.events.onInputDown.add(this.switchAnimal, this);
 
     this.leftArrow = this.game.add.sprite(60, this.game.world.centerY, 'arrow');
     this.leftArrow.anchor.setTo(.5);
@@ -84,7 +83,7 @@ let GameState = {
     const direction = sprite.customParams.direction;
     const self = this;
     let newAnimal, endX;
-    console.log(self.currentAnimal);
+
     // use isMoving state to prvent multi-click when switching
     if (this.isMoving) {
       return false;
@@ -92,12 +91,6 @@ let GameState = {
       this.isMoving = true;
     }
     this.animalText.setText('');
-    // check current and next to prevent moving further than  list intends
-    // if (this.currentAnimal.key === 'chicken' && direction === -1) {
-    //   return false;
-    // } else if (this.currentAnimal.key === 'sheep' && direction === 1) {
-    //   return false;
-    // }
 
     // determine new animal based on arrow direction
     if (direction === 1) {
@@ -111,13 +104,10 @@ let GameState = {
       endX = -1000;
     }
 
-    //move current
     // move current off screen
-    // store twee animation
-    const currentAnimalMovement = this.add.tween(self.currentAnimal);
+    const currentAnimalMovement = this.add.tween(self.currentAnimal);// store twee animation
     currentAnimalMovement.to({x: endX}, 1000); // set tween options
-    currentAnimalMovement.onComplete.add(function() {
-      // self.isMoving = false;
+    currentAnimalMovement.onComplete.add(function() { // setup clemplete allback
       self.showText();
     });
     currentAnimalMovement.start(); // begin animation
@@ -130,10 +120,8 @@ let GameState = {
       self.showText();
     });
     newAnimalMovement.start();
-    // this.currentAnimal.position.set(-1000, self.game.world.centerY);
-    this.currentAnimal = newAnimal; //reset current and move new curren tot cente
-    // this.currentAnimal.position.set(self.game.world.centerX, self.game.world.centerY);
 
+    this.currentAnimal = newAnimal; //reset current and move new curren tot cente
   },
 
   animateAnimal: function(sprite, event) {
@@ -161,7 +149,7 @@ let GameState = {
         // set moving to false after complete of text
         self.isMoving = false;
       });
-      // this.animalText.x(this.game.height + 500); // move to under screen
+
       this.animalText.setText(this.currentAnimal.customParams.text); // set text
       animalTextMovement.start();
     }
